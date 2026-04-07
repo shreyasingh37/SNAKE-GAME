@@ -51,6 +51,8 @@ const state = {
   obstacles: [],
   nextFoodTime: 0,
   pulse: 1,
+  viewWidth: 0,
+  viewHeight: 0,
 };
 
 // Difficulty tuning knobs.
@@ -108,16 +110,23 @@ class SoundFX {
 const sfx = new SoundFX();
 
 function resizeCanvas() {
-  const rect = canvas.getBoundingClientRect();
+  const parent = canvas.parentElement || document.body;
+  const rect = parent.getBoundingClientRect();
+  const width = Math.max(1, rect.width);
+  const height = Math.max(1, rect.height);
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  canvas.width = rect.width * dpr;
-  canvas.height = rect.height * dpr;
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  state.viewWidth = width;
+  state.viewHeight = height;
 }
 
 function resetSnake() {
-  const centerX = canvas.clientWidth / 2;
-  const centerY = canvas.clientHeight / 2;
+  const centerX = state.viewWidth / 2;
+  const centerY = state.viewHeight / 2;
   state.snake = [];
   for (let i = 0; i < state.desiredLength; i += 1) {
     state.snake.push({ x: centerX - i * state.spacing, y: centerY });
@@ -147,8 +156,8 @@ function generateObstacles() {
     while (attempt < tries && !obstacle) {
       const width = randRange(40, 110);
       const height = randRange(30, 80);
-      const x = randRange(30, canvas.clientWidth - width - 30);
-      const y = randRange(40, canvas.clientHeight - height - 30);
+      const x = randRange(30, state.viewWidth - width - 30);
+      const y = randRange(40, state.viewHeight - height - 30);
       const rect = { x, y, width, height, vx: 0, vy: 0 };
       if (!rectIntersectsSnake(rect)) {
         obstacle = rect;
@@ -159,8 +168,8 @@ function generateObstacles() {
   }
   if (state.difficulty === 'hard') {
     state.obstacles.push({
-      x: canvas.clientWidth * 0.3,
-      y: canvas.clientHeight * 0.2,
+      x: state.viewWidth * 0.3,
+      y: state.viewHeight * 0.2,
       width: 90,
       height: 24,
       vx: 60,
@@ -175,9 +184,12 @@ function startGame() {
   state.foods = [];
   state.particles = [];
   state.pulse = 1;
+  resizeCanvas();
   applyDifficulty();
   resetSnake();
   generateObstacles();
+  spawnFood('normal');
+  if (Math.random() < 0.4) spawnFood('bonus');
   state.nextFoodTime = 0;
   state.lastTime = performance.now();
   state.running = true;
@@ -219,8 +231,8 @@ function spawnFood(type) {
   const def = foodTypes[type];
   const tries = 60;
   for (let i = 0; i < tries; i += 1) {
-    const x = randRange(def.radius + 20, canvas.clientWidth - def.radius - 20);
-    const y = randRange(def.radius + 20, canvas.clientHeight - def.radius - 20);
+    const x = randRange(def.radius + 20, state.viewWidth - def.radius - 20);
+    const y = randRange(def.radius + 20, state.viewHeight - def.radius - 20);
     const candidate = { x, y, type, createdAt: performance.now(), alpha: 0 };
     if (!foodCollides(candidate)) {
       state.foods.push(candidate);
@@ -273,18 +285,18 @@ function updateSnake(dt) {
   if (state.wallMode) {
     if (
       head.x < state.headRadius ||
-      head.x > canvas.clientWidth - state.headRadius ||
+      head.x > state.viewWidth - state.headRadius ||
       head.y < state.headRadius ||
-      head.y > canvas.clientHeight - state.headRadius
+      head.y > state.viewHeight - state.headRadius
     ) {
       endGame();
       return;
     }
   } else {
-    if (head.x < -state.headRadius) head.x = canvas.clientWidth + state.headRadius;
-    if (head.x > canvas.clientWidth + state.headRadius) head.x = -state.headRadius;
-    if (head.y < -state.headRadius) head.y = canvas.clientHeight + state.headRadius;
-    if (head.y > canvas.clientHeight + state.headRadius) head.y = -state.headRadius;
+    if (head.x < -state.headRadius) head.x = state.viewWidth + state.headRadius;
+    if (head.x > state.viewWidth + state.headRadius) head.x = -state.headRadius;
+    if (head.y < -state.headRadius) head.y = state.viewHeight + state.headRadius;
+    if (head.y > state.viewHeight + state.headRadius) head.y = -state.headRadius;
   }
 
   for (let i = 1; i < state.snake.length; i += 1) {
@@ -311,8 +323,8 @@ function updateObstacles(dt) {
     if (!rect.vx && !rect.vy) continue;
     rect.x += rect.vx * dt;
     rect.y += rect.vy * dt;
-    if (rect.x < 20 || rect.x + rect.width > canvas.clientWidth - 20) rect.vx *= -1;
-    if (rect.y < 20 || rect.y + rect.height > canvas.clientHeight - 20) rect.vy *= -1;
+    if (rect.x < 20 || rect.x + rect.width > state.viewWidth - 20) rect.vx *= -1;
+    if (rect.y < 20 || rect.y + rect.height > state.viewHeight - 20) rect.vy *= -1;
   }
 }
 
@@ -405,21 +417,21 @@ function updateSpeed() {
 }
 
 function drawBackground() {
-  ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+  ctx.clearRect(0, 0, state.viewWidth, state.viewHeight);
   ctx.save();
   ctx.globalAlpha = 0.15;
   ctx.strokeStyle = 'rgba(255,255,255,0.15)';
   const step = 40;
-  for (let x = 0; x <= canvas.clientWidth; x += step) {
+  for (let x = 0; x <= state.viewWidth; x += step) {
     ctx.beginPath();
     ctx.moveTo(x, 0);
-    ctx.lineTo(x, canvas.clientHeight);
+    ctx.lineTo(x, state.viewHeight);
     ctx.stroke();
   }
-  for (let y = 0; y <= canvas.clientHeight; y += step) {
+  for (let y = 0; y <= state.viewHeight; y += step) {
     ctx.beginPath();
     ctx.moveTo(0, y);
-    ctx.lineTo(canvas.clientWidth, y);
+    ctx.lineTo(state.viewWidth, y);
     ctx.stroke();
   }
   ctx.restore();
@@ -501,11 +513,11 @@ function drawPaused() {
   if (!state.paused) return;
   ctx.save();
   ctx.fillStyle = 'rgba(0,0,0,0.4)';
-  ctx.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+  ctx.fillRect(0, 0, state.viewWidth, state.viewHeight);
   ctx.fillStyle = '#ffffff';
   ctx.font = '600 24px Trebuchet MS';
   ctx.textAlign = 'center';
-  ctx.fillText('Paused', canvas.clientWidth / 2, canvas.clientHeight / 2);
+  ctx.fillText('Paused', state.viewWidth / 2, state.viewHeight / 2);
   ctx.restore();
 }
 
@@ -707,12 +719,26 @@ function initListeners() {
   setupDpad();
 }
 
+function initIdleScene() {
+  state.score = 0;
+  state.desiredLength = 14;
+  state.foods = [];
+  state.particles = [];
+  applyDifficulty();
+  resetSnake();
+  generateObstacles();
+  spawnFood('normal');
+  if (Math.random() < 0.4) spawnFood('bonus');
+  updateHUD();
+}
+
 function init() {
   resizeCanvas();
-  updateHUD();
   initListeners();
   applyTheme('dark');
   toggleSound(true);
+  // Auto-start on load.
+  startGame();
   requestAnimationFrame(gameLoop);
 }
 
