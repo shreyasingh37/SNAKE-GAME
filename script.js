@@ -639,12 +639,17 @@ function setupTouchControls() {
 
 function setupDpad() {
   dpadButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
+    const handler = () => {
       const dir = btn.dataset.dir;
       if (dir === 'up') setDirection(0, -1);
       if (dir === 'down') setDirection(0, 1);
       if (dir === 'left') setDirection(-1, 0);
       if (dir === 'right') setDirection(1, 0);
+    };
+    btn.addEventListener('click', handler);
+    btn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      handler();
     });
   });
 }

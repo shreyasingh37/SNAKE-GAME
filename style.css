@@ -127,6 +127,7 @@ body {
   border-radius: 20px;
   background: rgba(8, 12, 18, 0.6);
   box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.2);
+  touch-action: none;
 }
 
 .overlay {
@@ -220,6 +221,7 @@ body {
   display: grid;
   gap: 8px;
   opacity: 0.8;
+  z-index: 5;
 }
 
 .dpad-row {
@@ -237,6 +239,7 @@ body {
   font-size: 18px;
   cursor: pointer;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 @media (min-width: 900px) {
@@ -256,5 +259,15 @@ body {
   }
   .game-area {
     padding: 12px;
+  }
+  .dpad {
+    left: 12px;
+    bottom: 12px;
+    opacity: 0.95;
+  }
+  .dpad-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 20px;
   }
 }
