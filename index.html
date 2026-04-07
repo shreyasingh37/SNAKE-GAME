@@ -1,0 +1,98 @@
+﻿<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Snake Ball Growth</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="hud">
+      <div class="hud-left">
+        <div class="stat">
+          <span class="label">Score</span>
+          <span id="score">0</span>
+        </div>
+        <div class="stat">
+          <span class="label">High</span>
+          <span id="highScore">0</span>
+        </div>
+      </div>
+      <div class="hud-right">
+        <button id="pauseBtn" class="btn ghost" aria-label="Pause or resume">Pause</button>
+        <button id="soundBtn" class="btn ghost" aria-label="Toggle sound">Sound: On</button>
+        <button id="themeBtn" class="btn ghost" aria-label="Toggle theme">Theme: Dark</button>
+        <button id="wrapBtn" class="btn ghost" aria-label="Toggle wall mode">Walls: On</button>
+      </div>
+    </header>
+
+    <main class="game-area">
+      <canvas id="gameCanvas"></canvas>
+      <div class="dpad" aria-hidden="true">
+        <button class="dpad-btn" data-dir="up">▲</button>
+        <div class="dpad-row">
+          <button class="dpad-btn" data-dir="left">◀</button>
+          <button class="dpad-btn" data-dir="down">▼</button>
+          <button class="dpad-btn" data-dir="right">▶</button>
+        </div>
+      </div>
+    </main>
+
+    <section id="startScreen" class="overlay">
+      <div class="panel">
+        <h1>Snake Ball Growth</h1>
+        <p class="subtitle">Eat glowing balls, grow longer, and survive the chaos.</p>
+        <div class="options">
+          <div class="option">
+            <label for="difficulty">Difficulty</label>
+            <select id="difficulty">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+          <div class="option">
+            <label>Walls</label>
+            <div class="toggle">
+              <input type="checkbox" id="wallsToggle" checked />
+              <span>Solid walls (off = wrap)</span>
+            </div>
+          </div>
+          <div class="option">
+            <label>Sound</label>
+            <div class="toggle">
+              <input type="checkbox" id="soundToggle" checked />
+              <span>Effects enabled</span>
+            </div>
+          </div>
+          <div class="option">
+            <label>Theme</label>
+            <div class="toggle">
+              <input type="checkbox" id="themeToggle" checked />
+              <span>Dark mode</span>
+            </div>
+          </div>
+        </div>
+        <button id="startBtn" class="btn primary">Start Game</button>
+        <p class="hint">Controls: WASD / Arrow keys. Swipe or tap D-pad on mobile. Press P to pause.</p>
+      </div>
+    </section>
+
+    <section id="gameOverScreen" class="overlay hidden">
+      <div class="panel">
+        <h2>Game Over</h2>
+        <p class="subtitle">Your snake ran out of luck.</p>
+        <div class="final-score">
+          <span>Final Score</span>
+          <strong id="finalScore">0</strong>
+        </div>
+        <button id="restartBtn" class="btn primary">Play Again</button>
+        <button id="menuBtn" class="btn ghost">Back to Menu</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
