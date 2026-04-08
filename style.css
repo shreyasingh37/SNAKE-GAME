@@ -214,65 +214,42 @@ body {
   margin-top: 16px;
 }
 
-.dpad {
+.joystick {
   position: fixed;
-  top: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: grid;
-  grid-template-columns: repeat(3, 52px);
-  grid-template-rows: repeat(3, 52px);
-  gap: 6px;
-  opacity: 0.95;
+  bottom: 28px;
+  left: 28px;
   z-index: 50;
-  padding: 8px 12px;
-  border-radius: 16px;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid var(--panel-border);
-  backdrop-filter: blur(8px);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.2s ease;
 }
 
-.dpad-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+.joystick-base {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--panel-border);
+  backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.joystick-knob {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
   background: var(--btn-bg);
-  color: var(--text);
-  font-size: 18px;
-  cursor: pointer;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  align-self: center;
-  justify-self: center;
+  border: 1px solid var(--panel-border);
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.35);
+  transform: translate(0, 0);
+  transition: transform 0.1s ease;
 }
 
-body.game-running .dpad {
+body.game-running .joystick {
   pointer-events: auto;
-  opacity: 0.95;
-}
-
-.dpad-btn.up {
-  grid-column: 2;
-  grid-row: 1;
-}
-
-.dpad-btn.left {
-  grid-column: 1;
-  grid-row: 2;
-}
-
-.dpad-btn.right {
-  grid-column: 2;
-  grid-row: 2;
-}
-
-.dpad-btn.down {
-  grid-column: 2;
-  grid-row: 3;
+  opacity: 1;
 }
 
 @media (max-width: 720px) {
@@ -287,14 +264,16 @@ body.game-running .dpad {
   .game-area {
     padding: 12px;
   }
-  .dpad {
-    top: 64px;
-    grid-template-columns: repeat(3, 58px);
-    grid-template-rows: repeat(3, 58px);
+  .joystick {
+    bottom: 16px;
+    left: 16px;
   }
-  .dpad-btn {
-    width: 52px;
-    height: 52px;
-    font-size: 20px;
+  .joystick-base {
+    width: 132px;
+    height: 132px;
+  }
+  .joystick-knob {
+    width: 64px;
+    height: 64px;
   }
 }

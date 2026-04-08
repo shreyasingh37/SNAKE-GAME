@@ -22,7 +22,9 @@ const wallsToggle = document.getElementById('wallsToggle');
 const soundToggle = document.getElementById('soundToggle');
 const themeToggle = document.getElementById('themeToggle');
 
-const dpadButtons = document.querySelectorAll('.dpad-btn');
+const joystick = document.querySelector('.joystick');
+const joystickBase = document.querySelector('.joystick-base');
+const joystickKnob = document.querySelector('.joystick-knob');
 
 // Core game state (mutated by the loop).
 const state = {
@@ -639,21 +641,55 @@ function setupTouchControls() {
   );
 }
 
-function setupDpad() {
-  dpadButtons.forEach((btn) => {
-    const handler = () => {
-      const dir = btn.dataset.dir;
-      if (dir === 'up') setDirection(0, -1);
-      if (dir === 'down') setDirection(0, 1);
-      if (dir === 'left') setDirection(-1, 0);
-      if (dir === 'right') setDirection(1, 0);
-    };
-    btn.addEventListener('click', handler);
-    btn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      handler();
-    });
+function setupJoystick() {
+  if (!joystickBase || !joystickKnob) return;
+  let active = false;
+
+  const radius = () => joystickBase.clientWidth / 2;
+
+  const updateKnob = (dx, dy) => {
+    const max = radius() - joystickKnob.clientWidth / 2;
+    const dist = Math.hypot(dx, dy) || 1;
+    const clamped = Math.min(dist, max);
+    const nx = (dx / dist) * clamped;
+    const ny = (dy / dist) * clamped;
+    joystickKnob.style.transform = `translate(${nx}px, ${ny}px)`;
+    if (dist > 6) setDirection(dx, dy);
+  };
+
+  const resetKnob = () => {
+    joystickKnob.style.transform = 'translate(0, 0)';
+  };
+
+  const onStart = (clientX, clientY) => {
+    const rect = joystickBase.getBoundingClientRect();
+    const dx = clientX - (rect.left + rect.width / 2);
+    const dy = clientY - (rect.top + rect.height / 2);
+    active = true;
+    updateKnob(dx, dy);
+  };
+
+  const onMove = (clientX, clientY) => {
+    if (!active) return;
+    const rect = joystickBase.getBoundingClientRect();
+    const dx = clientX - (rect.left + rect.width / 2);
+    const dy = clientY - (rect.top + rect.height / 2);
+    updateKnob(dx, dy);
+  };
+
+  const onEnd = () => {
+    active = false;
+    resetKnob();
+  };
+
+  joystickBase.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    joystickBase.setPointerCapture(e.pointerId);
+    onStart(e.clientX, e.clientY);
   });
+  joystickBase.addEventListener('pointermove', (e) => onMove(e.clientX, e.clientY));
+  joystickBase.addEventListener('pointerup', onEnd);
+  joystickBase.addEventListener('pointercancel', onEnd);
 }
 
 function applyTheme(theme) {
@@ -724,7 +760,7 @@ function initListeners() {
   });
 
   setupTouchControls();
-  setupDpad();
+  setupJoystick();
 }
 
 function initIdleScene() {
