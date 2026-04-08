@@ -196,12 +196,14 @@ function startGame() {
   state.paused = false;
   startScreen.classList.add('hidden');
   gameOverScreen.classList.add('hidden');
+  document.body.classList.add('game-running');
   updateHUD();
 }
 
 function endGame() {
   state.running = false;
   state.paused = false;
+  document.body.classList.remove('game-running');
   finalScoreEl.textContent = state.score;
   gameOverScreen.classList.remove('hidden');
   sfx.gameOver();
@@ -699,6 +701,7 @@ function initListeners() {
   menuBtn.addEventListener('click', () => {
     gameOverScreen.classList.add('hidden');
     startScreen.classList.remove('hidden');
+    document.body.classList.remove('game-running');
   });
 
   pauseBtn.addEventListener('click', togglePause);
@@ -742,8 +745,8 @@ function init() {
   initListeners();
   applyTheme('dark');
   toggleSound(true);
-  // Auto-start on load.
-  startGame();
+  initIdleScene();
+  document.body.classList.remove('game-running');
   requestAnimationFrame(gameLoop);
 }
 
