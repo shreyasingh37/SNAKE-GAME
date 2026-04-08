@@ -220,7 +220,9 @@ body {
   left: 50%;
   transform: translateX(-50%);
   display: grid;
-  gap: 8px;
+  grid-template-columns: repeat(3, 52px);
+  grid-template-rows: repeat(3, 52px);
+  gap: 6px;
   opacity: 0.95;
   z-index: 50;
   padding: 8px 12px;
@@ -228,11 +230,6 @@ body {
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--panel-border);
   backdrop-filter: blur(8px);
-}
-
-.dpad-row {
-  display: flex;
-  gap: 8px;
 }
 
 .dpad-btn {
@@ -246,6 +243,28 @@ body {
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  align-self: center;
+  justify-self: center;
+}
+
+.dpad-btn.up {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.dpad-btn.left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.dpad-btn.right {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.dpad-btn.down {
+  grid-column: 2;
+  grid-row: 3;
 }
 
 @media (max-width: 720px) {
@@ -262,6 +281,8 @@ body {
   }
   .dpad {
     top: 64px;
+    grid-template-columns: repeat(3, 58px);
+    grid-template-rows: repeat(3, 58px);
   }
   .dpad-btn {
     width: 52px;
