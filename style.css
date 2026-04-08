@@ -242,12 +242,6 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-@media (min-width: 900px) {
-  .dpad {
-    display: none;
-  }
-}
-
 @media (max-width: 720px) {
   .hud {
     flex-direction: column;
